@@ -1,24 +1,10 @@
-This pipeline consists of detection through segmentation + recognition.
-Python 3.7.6, Pytorch 1.4.0
+### Пайплайн:
+- Детекция+сегментация с maskrcnn_resnet50_fpn (credit to https://www.kaggle.com/alyar88/maskrcnn-bb-x-mask-crnn-0-53)  
+- Для каждого баундинг бокса предсказываем относительные координаты углов (регрессия через resnet50 на 8 аутпутов, обучал на приведенных к одному размеру баундинг боксах исходных данных)  
+- Относительные координаты переводим в абсолютные, вырезаем только номер используя https://www.kaggle.com/glebmihaescu/perspective-transform.  
+Таким образом, фон практически не попадает в баундинг бокс:
+![alt text](images/plate.png)
 
-For segmentation/recognition datasets you've got to run create_datasets.ipynb to convert bboxes to segmentation masks and crop them for OCR.
+  
+- На получившейся фотографии запускаем recognition часть из бейзлайна (поменял бэкбоун на resnet50, использовал bidirectional GRU, тренировался на картинках, полученных трансформом выше, а не из бейзлайна)
 
-Each task can be trained using train.py in the respective dir. All the parameters, used to obtain the baseline,
- are set to default, except data_path.
-
-Once the 2 models are trained (you can find the baseline models in pretrained sections), you can proceed to inference.py and generate a submission. 
-
-Current networks and routines are basic, there's plenty of room for improvement and quick wins.
- The "TODO" sections are scattered across the code and hint to the possible problems/avenues of research, but TODOs are 
- not extensive, so do not rely solely on them.
-
-The pipeline is by no means optimal, you can extend it by introducing new components (neural networks/heuristics),
- especially between the two current networks.
- 
-Also the baseline overfits and doesn't score good on the private part of the test dataset, which comes from a bit different distribution. 
-
-Good luck and have fun!
-
-
-PS. Some unusual requirements:
- - pip install editdistance
